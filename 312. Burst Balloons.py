@@ -4,34 +4,21 @@ class Solution:
 			return 0
 		if len(nums) == 1:
 			return nums[0]
-		sums = {}
-		return self.maxSum(nums, sums)
-		
-		
-	def maxSum(self, nums, sums):
 		if len(nums) == 2:
-			return (nums[0] * nums[1]) + max(nums)
-		if tuple(nums) in sums:
-			return sums[tuple(nums)]
-		max_sum = 0
-		max_index = 0
-		#print(nums)
-		for i in range(len(nums)):
-			if i == 0:
-				current_sum = (1 * nums[i] * nums[i + 1])
-			elif i == len(nums) - 1:
-				current_sum = (nums[i - 1] * nums[i] * 1)
-			else:
-				current_sum = (nums[i - 1] * nums[i] * nums[i + 1])
+			return (nums[0] * nums[1]) + max(nums[0], nums[1])
 			
-			new_list = nums[:]
-			new_list.pop(i)
-			#print(nums, new_list)
-			total_sum = current_sum + self.maxSum(new_list, sums)
-			
-			if total_sum > max_sum:
-				max_sum = total_sum
-				max_index = i
+		nums = [1] + [x for x in nums if x != 0] + [1]
+		dp = [[0 for j in range(len(nums) - 1)] for i in range(len(nums) - 1)]
+		return self.maxSum(nums, dp, 1, len(nums) - 2)
 		
-		sums[tuple(nums)] = max_sum
-		return max_sum
+		
+	def maxSum(self, nums, dp, start, end):
+		#print(nums, start, end)
+		if start > end:
+			return 0
+		if dp[start][end] != 0:
+			return dp[start][end]
+		for i in range(start, end + 1):
+			dp[start][end] = max(dp[start][end], nums[start - 1] * nums[i] * nums[end + 1] + self.maxSum(nums, dp, start, i - 1) + self.maxSum(nums, dp, i + 1, end))
+			
+		return dp[start][end]
